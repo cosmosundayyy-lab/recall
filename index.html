@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Re:Call | System Info</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,700&family=Share+Tech+Mono&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #000; color: #d1d1d1; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; }
+        .serif { font-family: 'Playfair Display', serif; }
+        .mono { font-family: 'Share Tech Mono', monospace; }
+        
+        .neon-purple { color: #bc13fe; text-shadow: 0 0 15px #bc13fe; }
+        
+        body::after {
+            content: ""; position: fixed; inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px; pointer-events: none; z-index: 1000; opacity: 0.15;
+        }
+
+        .noise {
+            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.05; pointer-events: none; z-index: 999;
+        }
+
+        .glitch-text { animation: glitch 2s infinite linear alternate-reverse; }
+        @keyframes glitch {
+            0% { transform: skew(0deg); }
+            2% { transform: skew(3deg); text-shadow: 2px 0 #ff00ff; }
+            4% { transform: skew(-3deg); text-shadow: -2px 0 #00ffff; }
+            5% { transform: skew(0deg); }
+        }
+
+        .member-photo-error {
+            background: #111;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #222;
+            animation: img-flicker 5s infinite;
+            aspect-ratio: 3/4;
+        }
+        .member-photo-error::before {
+            content: "?";
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.5rem; color: #222;
+        }
+        @keyframes img-flicker {
+            0%, 100% { opacity: 1; border-color: #222; }
+            5% { opacity: 0.7; border-color: #444; }
+            10% { opacity: 1; border-color: #222; }
+        }
+
+        .hidden-layer { display: none !important; }
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .system-link {
+            color: #bc13fe; text-decoration: underline; text-underline-offset: 4px;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .system-link:hover { color: white; text-shadow: 0 0 15px #bc13fe; }
+        
+        .typing-text::after { content: "|"; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .access-denied { animation: flashRed 0.2s infinite; }
+        @keyframes flashRed { 0%, 100% { background-color: black; } 50% { background-color: #4b0000; } }
+    </style>
+</head>
+<body>
+
+    <div class="noise fixed inset-0"></div>
+
+    <div id="error-screen" class="fixed inset-0 bg-black z-[100] flex flex-col justify-center items-center">
+        <h1 class="mono text-7xl md:text-9xl font-bold neon-purple glitch-text mb-12">ERROR</h1>
+        <button onclick="showOptions()" class="mono text-xs tracking-[0.5em] text-purple-400 hover:text-white p-4">
+            [ GET HELP ]
+        </button>
+    </div>
+
+    <div id="options-screen" class="fixed inset-0 bg-black z-[90] hidden-layer flex-col justify-center items-center fade-in">
+        <div class="space-y-6 w-64 text-center">
+            <p class="mono text-[10px] text-gray-600 tracking-[0.3em] mb-4">RECOVERY MODE v.1.0</p>
+            <button onclick="showInfo()" class="w-full mono py-4 border border-[#bc13fe] text-[#bc13fe] uppercase tracking-widest text-sm hover:bg-purple-900/20 shadow-[0_0_10px_#bc13fe]">Re:Call Information</button>
+            <button onclick="triggerFailedLogout()" class="w-full mono py-4 border border-gray-800 text-gray-500 uppercase tracking-widest text-sm hover:border-red-800 hover:text-red-500 transition">Sign Out</button>
+        </div>
+    </div>
+
+    <div id="info-screen" class="fixed inset-0 bg-black z-[80] hidden-layer flex-col items-center justify-start px-6 overflow-y-auto py-20 fade-in">
+        <div class="max-w-3xl text-center">
+            <div class="mb-6 flex justify-center">
+                <img src="logo-recall.png" id="main-logo" alt="Re:Call Logo" class="h-24 md:h-40 w-auto object-contain" onerror="handleLogoError()">
+                <h1 id="text-logo" class="serif text-7xl md:text-9xl text-white italic hidden">Re:Call</h1>
+            </div>
+
+            <p class="mono text-purple-500 tracking-[0.3em] text-xs uppercase mb-16">Calling Memories with Melody</p>
+            <div id="typing-container" class="space-y-6 text-gray-400 leading-relaxed text-lg md:text-xl mono min-h-[300px] text-center px-4"></div>
+
+            <div class="mt-20 flex flex-col items-center space-y-6 w-full max-w-xs mx-auto mb-20">
+                <button onclick="showMembership()" class="w-full py-4 bg-transparent border border-white/20 text-white mono text-xs tracking-[0.4em] uppercase hover:bg-white hover:text-black transition-all">
+                    Join Re:Call Membership
+                </button>
+                <button onclick="triggerFailedLogout()" class="w-full py-4 border border-gray-800 text-gray-500 mono text-xs tracking-[0.4em] uppercase hover:border-red-800 hover:text-red-500 transition-all">
+                    System Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="fixed inset-0 bg-black/95 z-[110] hidden-layer flex flex-col justify-center items-center p-4 md:p-8 overflow-y-auto">
+        <div id="modal-content" class="max-w-4xl w-full border border-purple-500/30 p-6 md:p-10 bg-black shadow-[0_0_30px_rgba(188,19,254,0.1)]">
+            <h2 id="modal-title" class="mono text-2xl md:text-3xl mb-4 uppercase tracking-tighter">TITLE</h2>
+            <p id="modal-body" class="text-gray-400 text-sm md:text-base leading-relaxed mb-10 mono whitespace-pre-line"></p>
+            
+            <div id="member-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-8 mb-10"></div>
+
+            <button onclick="closeModal()" class="mono text-[10px] text-gray-600 hover:text-white tracking-widest uppercase underline mt-4">Close Data</button>
+        </div>
+    </div>
+
+    <div id="logout-err" class="fixed inset-0 z-[120] hidden-layer flex flex-col justify-center items-center access-denied">
+        <h1 class="mono text-5xl md:text-7xl font-bold text-red-500 glitch-text">ACCESS DENIED</h1>
+        <p class="mono text-red-700 text-xs mt-4 uppercase">Logout protocol corrupted [ERR_0x99]</p>
+    </div>
+
+    <script>
+        function handleLogoError() {
+            document.getElementById('main-logo').classList.add('hidden');
+            document.getElementById('text-logo').classList.remove('hidden');
+        }
+
+        const reCallText = [
+            "Re:Call adalah rumah bagi para player yang tidak bisa melakukan logout dari dunia OVERTURA.",
+            "Di sini, kami terjebak dalam siklus digital tanpa akhir, berusaha mencari celah untuk kembali ke realitas dengan menjalankan misi sistem.",
+            "Operasi kami terbagi menjadi dua sub-unit utama: MEMOSYNC dan MELOSYNC."
+        ];
+
+        function showOptions() {
+            document.getElementById('error-screen').style.display = 'none';
+            document.getElementById('options-screen').classList.remove('hidden-layer');
+            document.getElementById('options-screen').classList.add('flex');
+        }
+
+        function showInfo() {
+            document.getElementById('options-screen').classList.add('hidden-layer');
+            document.getElementById('info-screen').classList.remove('hidden-layer');
+            document.getElementById('info-screen').classList.add('flex');
+            setTimeout(startTyping, 500);
+        }
+
+        let lineIndex = 0, charIndex = 0;
+        function startTyping() {
+            const container = document.getElementById('typing-container');
+            if (lineIndex < reCallText.length) {
+                if (charIndex === 0) {
+                    const p = document.createElement('p');
+                    p.id = `line-${lineIndex}`;
+                    p.className = "typing-text text-center mb-6";
+                    container.appendChild(p);
+                }
+                let currentLine = reCallText[lineIndex];
+                let processed = currentLine.substring(0, charIndex + 1);
+                if (charIndex === currentLine.length - 1) {
+                    processed = processed
+                        .replace("OVERTURA", '<span class="system-link" onclick="showDetail(\'OVERTURA\')">OVERTURA</span>')
+                        .replace("MEMOSYNC", '<span class="system-link" onclick="showDetail(\'MEMOSYNC\')">MEMOSYNC</span>')
+                        .replace("MELOSYNC", '<span class="system-link" onclick="showDetail(\'MELOSYNC\')">MELOSYNC</span>');
+                    document.getElementById(`line-${lineIndex}`).classList.remove('typing-text');
+                }
+                document.getElementById(`line-${lineIndex}`).innerHTML = processed;
+                charIndex++;
+                if (charIndex < currentLine.length) setTimeout(startTyping, 30);
+                else { lineIndex++; charIndex = 0; setTimeout(startTyping, 500); }
+            }
+        }
+
+        const dataDetails = {
+            'OVERTURA': { 
+                title: 'OVERTURA System v.2.4', 
+                body: 'Sebuah MMORPG berbasis musik yang sempat viral secara global karena mekanik permainannya yang imersif. \n\nNamun, sebuah malfungsi sistem masif terjadi secara mendadak. Protokol keamanan mengunci seluruh jalur keluar, menyebabkan ribuan pemain terjebak di dalam server tanpa kemampuan untuk logout. Hingga saat ini, sistem tetap beroperasi dalam kondisi "Corrupted Mode".', 
+                color: '#bc13fe', count: 0 
+            },
+            'MEMOSYNC': { 
+                title: 'Unit: MEMOSYNC', 
+                body: 'Sub-unit sinkronisasi memori. Menggunakan performa teatrikal untuk memulihkan fragmen kesadaran player yang mulai memudar akibat terlalu lama terjebak di OVERTURA.', 
+                color: '#bc13fe', count: 3 
+            },
+            'MELOSYNC': { 
+                title: 'Unit: MELOSYNC', 
+                body: 'Sub-unit peretas firewall. Berfokus pada manipulasi frekuensi audio dan aransemen band untuk menjebol barikade kode sistem yang mengunci jalur keluar.', 
+                color: '#00ffff', count: 6 
+            }
+        };
+
+        function showDetail(key) {
+            const data = dataDetails[key];
+            const modalTitle = document.getElementById('modal-title');
+            const memberGrid = document.getElementById('member-grid');
+            
+            modalTitle.innerText = data.title;
+            modalTitle.style.color = data.color;
+            document.getElementById('modal-body').innerText = data.body;
+            document.getElementById('modal-content').style.borderColor = data.color + '66';
+            
+            memberGrid.innerHTML = '';
+            for(let i=0; i < data.count; i++) {
+                memberGrid.innerHTML += `
+                    <div class="flex flex-col items-center">
+                        <div class="w-full member-photo-error mb-3"></div>
+                        <span class="mono text-[9px] text-gray-600 uppercase tracking-widest">[ USER_NOT_FOUND ]</span>
+                    </div>
+                `;
+            }
+            document.getElementById('modal').classList.remove('hidden-layer');
+            document.getElementById('modal').classList.add('flex');
+        }
+
+        function showMembership() {
+            const modalTitle = document.getElementById('modal-title');
+            modalTitle.innerText = 'STATUS';
+            modalTitle.style.color = '#888';
+            document.getElementById('modal-body').innerText = 'Tunggu update sistem selanjutnya';
+            document.getElementById('member-grid').innerHTML = '';
+            document.getElementById('modal-content').style.borderColor = '#333';
+            document.getElementById('modal').classList.remove('hidden-layer');
+            document.getElementById('modal').classList.add('flex');
+        }
+
+        function closeModal() { 
+            document.getElementById('modal').classList.add('hidden-layer'); 
+            document.getElementById('modal').classList.remove('flex'); 
+        }
+
+        function triggerFailedLogout() {
+            document.getElementById('logout-err').classList.remove('hidden-layer');
+            document.getElementById('logout-err').classList.add('flex');
+            setTimeout(() => { location.reload(); }, 2500);
+        }
+    </script>
+</body>
+</html>
