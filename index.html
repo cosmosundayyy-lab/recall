@@ -6,6 +6,7 @@
     <title>OVERTURA | SYSTEM FAILURE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,700&family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background-color: #000; color: #d1d1d1; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; user-select: none; }
         .serif { font-family: 'Playfair Display', serif; }
@@ -40,7 +41,13 @@
             animation: error-appear 0.3s ease-out forwards, flicker 4s infinite 0.3s;
             opacity: 0;
             cursor: pointer;
+            color: #ff0033 !important;
+            text-shadow: 0 0 8px #ff0033;
+            display: flex;
+            align-items: center;
         }
+        .error-spam i { color: #ff0033 !important; margin-right: 8px; font-size: 1.2em; }
+
         @keyframes error-appear { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
         @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } 51% { opacity: 1; } }
 
@@ -65,16 +72,6 @@
 
         .access-denied { animation: flashRed 0.2s infinite; }
         @keyframes flashRed { 0%, 100% { background-color: black; } 50% { background-color: #4b0000; } }
-
-        .member-photo-error {
-            background: #111; position: relative; overflow: hidden; border: 1px solid #222;
-            animation: img-flicker 5s infinite; aspect-ratio: 3/4;
-        }
-        .member-photo-error::before {
-            content: "?"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-            font-family: 'Share Tech Mono', monospace; font-size: 1.5rem; color: #222;
-        }
-        @keyframes img-flicker { 0%, 100% { opacity: 1; border-color: #222; } 5% { opacity: 0.7; border-color: #444; } 10% { opacity: 1; border-color: #222; } }
 
         .hq-button {
             transition: all 0.3s ease;
@@ -105,7 +102,7 @@
     <div id="notification-screen" class="fixed inset-0 bg-black/90 z-[110] hidden-layer flex-col justify-center items-center p-6 backdrop-blur-sm fade-in">
         <div class="w-full max-w-lg border-2 border-red-700 p-6 md:p-8 bg-black shadow-[0_0_30px_rgba(255,0,51,0.2)]">
             <div class="flex items-center space-x-4 mb-6 pb-4 border-b border-red-900">
-                <span class="text-4xl md:text-5xl neon-red">⚠</span>
+                <span class="text-4xl md:text-5xl neon-red"><i class="fas fa-exclamation-triangle"></i></span>
                 <div class="flex-col">
                     <h2 class="mono text-xl md:text-2xl font-bold text-red-500 uppercase tracking-tight">System Emergency</h2>
                     <p class="mono text-[10px] text-red-700">[ CODE: ERR_LOGOUT_KILLED ]</p>
@@ -175,38 +172,37 @@
     </div>
 
     <script>
-        // DATA & CONFIG
         const errorMessages = [
-            { text: "CRITICAL_ERROR", type: "red", icon: "⚠" },
-            { text: "LOGOUT_FAILED", type: "red", icon: "⛔" },
-            { text: "MEMORY_CORRUPTION", type: "purple", icon: "⚡" },
-            { text: "SYSTEM_FAILURE", type: "red", icon: "⚠" },
-            { text: "ACCESS_DENIED", type: "purple", icon: "⛔" },
-            { text: "DATA_LOST", type: "red", icon: "×" }
+            { text: "CRITICAL_ERROR", iconClass: "fas fa-exclamation-triangle" },
+            { text: "LOGOUT_FAILED", iconClass: "fas fa-ban" },
+            { text: "MEMORY_CORRUPTION", iconClass: "fas fa-bolt" },
+            { text: "SYSTEM_FAILURE", iconClass: "fas fa-skull-crossbones" },
+            { text: "ACCESS_DENIED", iconClass: "fas fa-lock" },
+            { text: "DATA_LOST", iconClass: "fas fa-radiation" },
+            { text: "FIREWALL_BREACH", iconClass: "fas fa-fire" }
         ];
 
         const dataDetails = {
-            'OVERTURA': { title: 'OVERTURA System v.2.4', body: 'Sebuah MMORPG berbasis musik yang sempat viral secara global karena mekanik permainannya yang imersif. \n\nNamun, sebuah malfungsi sistem masif terjadi secara mendadak. Protokol keamanan mengunci seluruh jalur keluar, menyebabkan ribuan pemain terjebak di dalam server tanpa kemampuan untuk logout.', color: '#bc13fe', count: 0 },
-            'MEMOSYNC': { title: 'Unit: MEMOSYNC', body: 'Sub-unit sinkronisasi memori. Menggunakan performa teatrikal untuk memulihkan fragmen kesadaran player yang mulai memudar akibat terlalu lama terjebak di OVERTURA.', color: '#bc13fe', count: 3 },
-            'MELOSYNC': { title: 'Unit: MELOSYNC', body: 'Sub-unit peretas firewall. Berfokus pada manipulasi frekuensi audio dan aransemen band untuk menjebol barikade kode sistem yang mengunci jalur keluar.', color: '#00ffff', count: 6 },
-            'TANGKAPAN_MEMORI': { title: 'MEMORY CAPTURE PROXY', body: 'Sistem ini belum dienkripsi sepenuhnya. \n\nModul untuk melihat arsip dokumentasi visual sedang dalam tahap pengembangan tim MELOSYNC. Silakan kembali setelah pembaruan sistem berikutnya.', color: '#ff0033', count: 0 }
+            'OVERTURA': { title: 'OVERTURA System v.2.4', body: 'Sebuah MMORPG berbasis musik yang sempat viral secara global karena mekanik permainannya yang imersif. \n\nNamun, sebuah malfungsi sistem masif terjadi secara mendadak. Protokol keamanan mengunci seluruh jalur keluar, menyebabkan ribuan pemain terjebak di dalam server tanpa kemampuan untuk logout.', color: '#bc13fe' },
+            'MEMOSYNC': { title: 'Unit: MEMOSYNC', body: 'Sub-unit sinkronisasi memori. Menggunakan performa teatrikal untuk memulihkan fragmen kesadaran player yang mulai memudar akibat terlalu lama terjebak di OVERTURA.', color: '#bc13fe' },
+            'MELOSYNC': { title: 'Unit: MELOSYNC', body: 'Sub-unit peretas firewall. Berfokus pada manipulasi frekuensi audio dan aransemen band untuk menjebol barikade kode sistem yang mengunci jalur keluar.', color: '#00ffff' },
+            'CAPTURE_MEMORY': { title: 'CAPTURE MEMORY PROXY', body: 'Sistem ini belum dienkripsi sepenuhnya. \n\nModul untuk melihat arsip dokumentasi visual sedang dalam tahap pengembangan tim MELOSYNC. Silakan kembali setelah pembaruan sistem berikutnya.', color: '#ff0033' }
         };
 
-        // FUNCTIONS
         let spamInterval;
         function startErrorSpam() {
             const screen = document.getElementById('error-screen');
             spamInterval = setInterval(() => {
                 const msg = errorMessages[Math.floor(Math.random() * errorMessages.length)];
                 const div = document.createElement('div');
-                div.className = `error-spam ${msg.type === "red" ? "neon-red" : "neon-purple"} ${Math.random() > 0.5 ? "glitch-text" : ""}`;
-                div.innerHTML = `<span class="text-lg mr-2">${msg.icon}</span> ${msg.text}`;
+                div.className = `error-spam ${Math.random() > 0.5 ? "glitch-text" : ""}`;
+                div.innerHTML = `<i class="${msg.iconClass}"></i> ${msg.text}`;
                 div.style.top = Math.random() * 80 + 10 + "%";
                 div.style.left = Math.random() * 80 + 10 + "%";
-                div.style.fontSize = (Math.random() * 1.2 + 0.6) + "rem";
+                div.style.fontSize = (Math.random() * 1.0 + 0.5) + "rem";
                 screen.appendChild(div);
-                if (screen.children.length > 20) screen.removeChild(screen.children[1]);
-            }, 300);
+                if (screen.children.length > 25) screen.removeChild(screen.children[1]);
+            }, 250);
         }
 
         function showNotification() {
@@ -214,11 +210,12 @@
             document.getElementById('error-screen').style.display = 'none';
             document.getElementById('notification-screen').classList.remove('hidden-layer');
             document.getElementById('notification-screen').classList.add('flex');
+            
             setTimeout(() => {
                 document.getElementById('searching-section').classList.add('hidden-layer');
                 document.getElementById('hq-section').classList.remove('hidden-layer');
                 document.getElementById('hq-section').classList.add('flex');
-            }, 3500);
+            }, 7000); 
         }
 
         function showInfo() {
@@ -256,8 +253,8 @@
                 }
                 document.getElementById(`line-${lineIndex}`).innerHTML = processed;
                 charIndex++;
-                if (charIndex < currentLine.length) setTimeout(startTyping, 30);
-                else { lineIndex++; charIndex = 0; setTimeout(startTyping, 500); }
+                if (charIndex < currentLine.length) setTimeout(startTyping, 70);
+                else { lineIndex++; charIndex = 0; setTimeout(startTyping, 1000); }
             }
         }
 
@@ -268,17 +265,8 @@
             document.getElementById('modal-title').style.color = data.color;
             document.getElementById('modal-body').innerHTML = data.body;
             document.getElementById('member-grid').innerHTML = '';
-            
-            for(let i=0; i < data.count; i++) {
-                document.getElementById('member-grid').innerHTML += `
-                    <div class="flex flex-col items-center">
-                        <div class="w-full member-photo-error mb-3"></div>
-                        <span class="mono text-[9px] text-gray-600 uppercase">[ USER_NOT_FOUND ]</span>
-                    </div>`;
-            }
             modal.classList.remove('hidden-layer');
             modal.classList.add('flex');
-            modal.scrollTop = 0;
         }
 
         function showMembership() {
@@ -295,39 +283,57 @@
                     </div>
                     <div>
                         <h3 class="text-white font-bold mb-2 uppercase">[ Penggunaan Kartu ]</h3>
-                        <p class="text-xs">1. Bawa kartu ke markas saat misi berlangsung.<br>2. Lakukan verifikasi kepada tim penjaga markas.<br>3. Tiap verifikasi memberikan <span class="text-green-500">HP Boost Item</span> & poin akumulasi.<br>4. Tiap 10 verifikasi: Modul potongan 50% untuk satu <span class="system-link" onclick="showDetail('TANGKAPAN_MEMORI')">Tangkapan Memori</span>.<br>5. Poin terbanyak di akhir periode akan mendapat item langka.</p>
-                    </div>
-                    <p class="text-[10px] text-gray-500 italic">Notes: Kartu akses saat ini GRATIS (Masa percobaan/Persediaan terbatas).</p>
-                </div>
-                <div class="mb-10 text-center">
-                    <p class="mono text-[9px] text-purple-700 uppercase mb-4">Preview: Access Key Card</p>
-                    <div class="w-full max-w-sm mx-auto aspect-[1.6/1] border border-dashed border-gray-800 flex items-center justify-center bg-zinc-950">
-                        <span class="mono text-[10px] text-gray-700 animate-pulse">[ IMAGE_DATA_ENCRYPTED ]</span>
+                        <p class="text-xs">1. Bawa kartu ke markas saat misi berlangsung.<br>2. Lakukan verifikasi kepada tim penjaga markas.<br>3. Tiap verifikasi memberikan <span class="text-green-500">HP Boost Item</span> & poin akumulasi.<br>4. Tiap 10 verifikasi: Modul potongan 50% untuk satu <span class="system-link" onclick="showDetail('CAPTURE_MEMORY')">Capture Memory</span>.</p>
                     </div>
                 </div>
                 <div class="flex justify-center pb-6">
                     <button onclick="showMemberList()" class="px-8 py-3 border border-gray-700 text-gray-500 mono text-[10px] uppercase hover:border-purple-500 hover:text-purple-400 transition-all">Check Member List</button>
                 </div>`;
-            
             modal.classList.remove('hidden-layer');
             modal.classList.add('flex');
-            modal.scrollTop = 0;
         }
 
         function showMemberList() {
             document.getElementById('modal-title').innerText = 'DATABASE ARCHIVE';
             document.getElementById('modal-title').style.color = '#fff';
+            
+            const members = [
+                { code: "XX-000", name: "[ SYSTEM_ROOT ]", verif: "??", pts: "INF" },
+                { code: "RC-001", name: "Core Protocol 01", verif: "00", pts: "0" },
+                { code: "RC-002", name: "Core Protocol 02", verif: "00", pts: "0" },
+                { code: "RC-003", name: "Core Protocol 03", verif: "00", pts: "0" },
+                { code: "RC-004", name: "Core Protocol 04", verif: "00", pts: "0" },
+                { code: "RC-005", name: "Core Protocol 05", verif: "00", pts: "0" },
+                { code: "RC-006", name: "Core Protocol 06", verif: "00", pts: "0" },
+                { code: "RC-007", name: "Core Protocol 07", verif: "00", pts: "0" }
+            ];
+
+            let memberRows = members.map(m => {
+                const isRoot = m.code === "XX-000";
+                const rowClass = isRoot ? "bg-red-950/10 border-b border-red-900/30" : "border-b border-gray-900";
+                const codeClass = isRoot ? "text-red-500 font-bold" : "text-purple-500";
+                const nameClass = isRoot ? "text-red-200" : "text-gray-300";
+                return `
+                <tr class="${rowClass} hover:bg-white/5 transition-colors">
+                    <td class="p-3 ${codeClass}">${m.code}</td>
+                    <td class="p-3 ${nameClass} italic tracking-wider">${m.name}</td>
+                    <td class="p-3 text-gray-500">${m.verif}</td>
+                    <td class="p-3 ${isRoot ? 'text-red-500' : 'text-white'}">${m.pts}</td>
+                </tr>`;
+            }).join('');
+
             document.getElementById('modal-body').innerHTML = `
-                <div class="overflow-x-auto w-full mb-10">
-                    <table class="w-full text-left mono text-[10px]">
-                        <thead class="border-b border-gray-800 text-purple-500">
-                            <tr><th class="p-2">CODE</th><th class="p-2">NAME</th><th class="p-2">VERIF</th><th class="p-2">PTS</th></tr>
+                <div class="overflow-x-auto w-full mb-10 border border-gray-800">
+                    <table class="w-full text-left mono text-[10px] md:text-xs">
+                        <thead class="bg-gray-900/50 text-purple-500 uppercase">
+                            <tr><th class="p-3 border-b border-gray-800">Code</th><th class="p-3 border-b border-gray-800">Identity</th><th class="p-3 border-b border-gray-800">Verif</th><th class="p-3 border-b border-gray-800">Pts</th></tr>
                         </thead>
-                        <tbody class="text-gray-400">
-                            <tr><td class="p-2">RC-001</td><td class="p-2 font-white italic">[ SYSTEM_OWNER ]</td><td class="p-2">??</td><td class="p-2">MAX</td></tr>
-                        </tbody>
+                        <tbody class="divide-y divide-gray-900">${memberRows}</tbody>
                     </table>
-                    <p class="mt-8 text-center text-gray-600 italic">[ MENCARI DATA PLAYER... ]</p>
+                </div>
+                <div class="flex flex-col items-center space-y-2 opacity-50">
+                    <p class="text-center text-gray-600 italic text-[9px] uppercase tracking-[0.2em]">[ Monitoring System Active ]</p>
+                    <p class="text-[8px] text-gray-700 mono">NO REGISTERED_PLAYER (PL) DETECTED IN THIS SECTOR</p>
                 </div>`;
         }
 
